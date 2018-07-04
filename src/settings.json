@@ -1,0 +1,52 @@
+{
+    "dataset": {
+        "pressure_static_normalization_factor": 3.0,
+        "pressure_dynamic_normalization_factor": 5.5,
+        "pressure_normalization_factor": 3.8,
+        "velocity_normalization_factor": 5.7,
+        "pressure_encoded_normalization_factor": 3.0,
+        "pressure_encoded_total_normalization_factor": 3.5,
+        "pressure_encoded_vae_normalization_factor": 0.7,
+        "pressure_encoded_dynamic_normalization_factor": 2.9,
+        "velocity_encoded_normalization_factor": 3.2,
+        "pressure_encoded_total_gas_normalization_factor": 2.9,
+        "pressure_density_encoded_gas_normalization_factor": 3.3
+    },
+    "ae": {
+        "batch_size": 4,
+        "code_layer_size": 2048,
+        "dropout": 0.0,
+        "learning_rate": 0.00015,
+        "learning_rate_decay": 1e-05,
+        "l1_regularization": 0.0,
+        "l2_regularization": 0.0
+    },
+    "lstm": {
+        "time_steps": 6,
+        "out_time_steps": 1,
+        "encoder_lstm_neurons": 256,
+        "decoder_lstm_neurons": 512,
+        "attention_neurons": 400,
+        "activation": "tanh",
+        "loss": "mae",
+        "batch_size": 10,
+        "stateful": false,
+        "use_bidirectional": false,
+        "use_attention": false,
+        "use_deep_encoder": false,
+        "use_time_conv_encoder": false,
+        "time_conv_encoder_kernel": 2,
+        "time_conv_encoder_dilation": 1,
+        "time_conv_encoder_filters": 2048,
+        "time_conv_encoder_depth": 0,
+        "use_time_conv_decoder": true,
+        "time_conv_decoder_filters": 512,
+        "time_conv_decoder_depth": 1,
+        "use_noisy_training": false,
+        "noise_probability": 0.3
+    },
+    "project": {
+        "name": "default",
+        "path": "../projects/"
+    }
+}
