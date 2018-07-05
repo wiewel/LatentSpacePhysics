@@ -58,10 +58,14 @@ args = arguments.dpfn_dataset()
 
 # Version control
 #--------------------------------
-# get git revision of mantaflow submodule
-git_version = git.revision()
+# get git revision
+try:
+    git_version = git.revision()
+except:
+    git_version = "no_git"
+
 debug = False
-if not git.is_clean():
+if git_version != "no_git" and not git.is_clean():
     debug = True
     if not args.ignore_git_status:
         raise RuntimeError("Trying to generate dataset with uncommitted changes. Use the argument '--ignore_git_status' ignore this.")
