@@ -1,0 +1,5 @@
+*.pyc
+projects/
+predictions/
+mantaflow/build/
+datasets/

@@ -88,7 +88,7 @@ __settings = {
         "time_conv_encoder_depth":    0,
         "use_time_conv_decoder":      True,
         "time_conv_decoder_filters":  4096,
-        "time_conv_decoder_depth":    1,
+        "time_conv_decoder_depth":    0,
         "use_noisy_training": False,
         "noise_probability": 0.3,
     },

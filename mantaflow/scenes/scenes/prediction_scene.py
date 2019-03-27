@@ -187,6 +187,7 @@ class SplitPredictionScene(FLIPScene):
             if self.smooth_prediction:
                 smooth_resolution_kernel = (self.resolution / 64.0) * 2.0
                 smoothenSurface(self.pressure, self.phi_fluid, iterations=int(smooth_resolution_kernel), surface_width=smooth_resolution_kernel)
+                smoothPressureCorner(flags=self.flags, pressure=self.pressure, boundary=self.boundary)
 
             if self.boundary>0:
                 self.pressure.setBoundNeumann(self.boundary-1)
@@ -369,10 +370,10 @@ class TotalPredictionScene(FLIPScene):
             if self.smooth_prediction:
                 smooth_resolution_kernel = (self.resolution / 64.0) * 2.0
                 smoothenSurface(self.pressure, self.phi_fluid, iterations=int(smooth_resolution_kernel), surface_width=smooth_resolution_kernel)
+                smoothPressureCorner(flags=self.flags, pressure=self.pressure, boundary=self.boundary)
 
             if self.boundary>0:
                 self.pressure.setBoundNeumann(self.boundary-1)
-
         else:
             # simulate frame
             super(TotalPredictionScene,self)._solve_pressure()
@@ -509,6 +510,7 @@ class DynamicPredictionScene(FLIPScene):
             if self.smooth_prediction:
                 smooth_resolution_kernel = (self.resolution / 64.0) * 2.0
                 smoothenSurface(self.pressure, self.phi_fluid, iterations=int(smooth_resolution_kernel), surface_width=smooth_resolution_kernel)
+                smoothPressureCorner(flags=self.flags, pressure=self.pressure, boundary=self.boundary)
 
             if self.boundary>0:
                 self.pressure.setBoundNeumann(self.boundary-1)

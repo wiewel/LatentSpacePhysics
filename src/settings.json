@@ -29,7 +29,7 @@
         "attention_neurons": 400,
         "activation": "tanh",
         "loss": "mae",
-        "batch_size": 10,
+        "batch_size": 16,
         "stateful": false,
         "use_bidirectional": false,
         "use_attention": false,
@@ -41,7 +41,7 @@
         "time_conv_encoder_depth": 0,
         "use_time_conv_decoder": true,
         "time_conv_decoder_filters": 512,
-        "time_conv_decoder_depth": 1,
+        "time_conv_decoder_depth": 0,
         "use_noisy_training": false,
         "noise_probability": 0.3
     },
