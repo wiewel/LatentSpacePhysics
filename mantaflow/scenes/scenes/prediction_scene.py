@@ -28,6 +28,8 @@ import keras
 import json
 import os
 
+assert keras.__version__ == "2.1.6", ("Only Keras 2.1.6 is supported. Currently installed Keras version is {}.".format(keras.__version__))
+
 #----------------------------------------------------------------------------------
 # profiling tools
 import tensorflow as tf

@@ -49,6 +49,8 @@ def fulfill():
             pip.main(["install", package])
     except:
         pass
+    import keras
+    assert keras.__version__ == "2.1.6", ("Only Keras 2.1.6 is supported. Currently installed Keras version is {}.".format(keras.__version__))
 
 def reset_rng():
     '''Setup seeds to be as deterministic as possible. cudNN is still not deterministic'''
