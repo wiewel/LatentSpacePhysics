@@ -104,7 +104,7 @@ If needed also adjust the batch size of the autoencoder training by changing `["
 
 To train only the autoencoder model execute the following command in the *\<gitdir\>/src/* directory:
 
-`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 40 --ae_pretrainepochs 0 --lstm_epochs 0 --chunk_size 20 --ae_evaluate --ae_loss tanhMSE2.0_MSE0.9`
+`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 40 --ae_pretrainepochs 0 --lstm_epochs 0 --chunk_size 20 --ae_evaluate --ae_loss mse`
 
 
 After the training process the final autoencoder model should reside under the given name *total_2D_liquid64* in the projects directory *\<gitdir\>/projects/*.
@@ -119,12 +119,12 @@ If the results look good enough we can now move on to training the prediction ne
 To train the prediction network we specify to load the previously generated autoencoder model in project *total_2D_liquid64* without training it *ae_epochs = 0*. At first we specify to train only one lstm epoch. This is done due to the sequence training data generation taking place before the actual training process. 
 The results are stored in the specified dataset directory *\<gitdir\>/datasets/2D_liquid64/encoded_total_pressure.npz* and *\<gitdir\>/datasets/2D_liquid64/enc_scene_list_encoded_total_pressure{_normalized}.png*.
 
-`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 0 --ae_pretrainepochs 0 --lstm_epochs 1 --chunk_size 20 --ae_loss tanhMSE2.0_MSE0.9 --ae_load total_2D_liquid64`
+`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 0 --ae_pretrainepochs 0 --lstm_epochs 1 --chunk_size 20 --ae_loss mse --ae_load total_2D_liquid64`
 
 Before training the prediction network make sure to select a good normalization factor so that the *enc_scene_list_encoded_total_pressure_normalized.png* is in the range *[-1,1]* by adjusting the `["dataset"]["pressure_encoded_total_normalization_factor"]` in the *settings.json* to a more fitting value.
 The *enc_scene_list_encoded_total_pressure_normalized.png* is re-created on every execution of the following call:
 
-`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 0 --ae_pretrainepochs 0 --lstm_epochs 50 --chunk_size 20 --lstm_evaluate 5 --ae_loss tanhMSE2.0_MSE0.9 --ae_load total_2D_liquid64 --lstm_load_dataset`
+`python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 0 --ae_pretrainepochs 0 --lstm_epochs 50 --chunk_size 20 --lstm_evaluate 5 --ae_loss mse --ae_load total_2D_liquid64 --lstm_load_dataset`
 
 After the training is finished the *lstm.h5* model is placed in the projects directory *\<gitdir\>/projects/total_2D_liquid64/*.
 
@@ -143,3 +143,10 @@ The parameter *name* stands for the name of the output directory in the *\<gitdi
 Resulting in a final path of *\<gitdir\>/predictions/total_2D_liquid64_Bench1/*.
 The parameters *w*, *s*, *i* stand for the warmup steps, the simulation steps that are executed after the warmup phase and the prediction interval as described in the paper, respectively.
 *-pt total_pressure* sets the prediction mode to the total pressure approach. This needs to match the mode of the trained model.
+
+
+## Trained Model and Simulation Data
+
+- [Total Pressure Model](http://ge.in.tum.de/download/2018-wiewel/2D_liquid64_trained.tar.gz)
+- [Small Simulation Dataset (10 scenes with 100 frames each)](http://ge.in.tum.de/download/2018-wiewel/2D_liquid64_small.tar.gz)
+- [Large Simulation Dataset (1000 scenes with 100 frames each) [TODO]]()
