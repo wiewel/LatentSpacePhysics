@@ -147,6 +147,15 @@ The parameters *w*, *s*, *i* stand for the warmup steps, the simulation steps th
 
 ## Trained Model and Simulation Data
 
+The following links lead to a trained version of the Total Pressure Autoencoder as well as the trained LSTM Prediction network and two liquid datasets (small/large). The large dataset was used to train the networks.
+After unpacking, the datasets must be copied to the `<gitdir>/datasets` directory whereas the network models must be copied to the `<gitdir>/projects` directory.
+
+### Downloads
 - [Total Pressure Model](http://ge.in.tum.de/download/2018-wiewel/2D_liquid64_trained.tar.gz)
 - [Small Simulation Dataset (10 scenes with 100 frames each)](http://ge.in.tum.de/download/2018-wiewel/2D_liquid64_small.tar.gz)
-- [Large Simulation Dataset (1000 scenes with 100 frames each) [TODO]]()
+- [Large Simulation Dataset (1000 scenes with 100 frames each)](https://dataserv.ub.tum.de/index.php/s/m1483096)
+
+### The final paths should look like:
+- Total Pressure Model: `<gitdir>/projects/total_2D_liquid64/`
+- Small Simulation Dataset: `<gitdir>/datasets/2D_liquid64_10/`
+- Large Simulation Dataset: `<gitdir>/datasets/2D_liquid64/`
