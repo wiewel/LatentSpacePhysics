@@ -69,7 +69,7 @@ After checking your installation install the following packages:
 
 ### Generate Dataset
 
-In this example we generate a simple 2D dataset in the resolution 64. To make things more interesting we actually generate a 128 simulation and downsample the fields accordingly.
+In this example we generate a simple 2D dataset in the resolution 64. To make things more interesting we actually generate a 128 simulation and downsample the fields accordingly. In the following we present the commands needed to train the `total_pressure` model that predicts future pressure fields. 
 
 Make sure you are in the *\<gitdir\>/mantaflow/* directory.
 
@@ -106,6 +106,7 @@ To train only the autoencoder model execute the following command in the *\<gitd
 
 `python train_total.py --name total_2D_liquid64 --dataset 2D_liquid64 --ae_epochs 40 --ae_pretrainepochs 0 --lstm_epochs 0 --chunk_size 20 --ae_evaluate --ae_loss mse`
 
+Note that `train_total.py` is the python script needed to train the `total_pressure` model. If the model should predict velocity fields instead, `train_vel.py` needs to be called accordingly.
 
 After the training process the final autoencoder model should reside under the given name *total_2D_liquid64* in the projects directory *\<gitdir\>/projects/*.
 The images with name scheme *AE_EncDec_{Number}.png* display a direct comparison of the Ground Truth to the encoded and then directly decoded autoencoder version.
