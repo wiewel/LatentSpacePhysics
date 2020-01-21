@@ -33,7 +33,7 @@ import itertools
 import numpy as np
 import tensorflow as tf
 
-from nn.arch.autoencoder import Autoencoder, SplitPressureAutoencoder
+from nn.arch.autoencoder import Autoencoder, SplitPressureAutoencoder, Autoencoder2D
 from nn.arch.lstm import Lstm
 from nn.lstm.error_classification import restructure_encoder_data
 from nn.lstm.sequence_training_data import TrainingData, TrainingDataType
@@ -65,6 +65,14 @@ else:
 data_fs = Filesystem(datasets_root + "/" + args.dataset + "/")
 
 def main():
+    autoencoder = None
+    autoencoder_desc = None
+    
+    #----------------------------------------------------------------------------
+    if args.ae_load:
+        with open(settings.project.path + args.ae_load + "/description_autoencoder", 'r') as f:
+            autoencoder_desc = json.load(f)
+
     # Dataset
     #----------------------------------------------------------------------------
     dataset = ds.DataSet()
@@ -79,13 +87,60 @@ def main():
 
     # Autoencoder
     #----------------------------------------------------------------------------
+    """
     autoencoder = Autoencoder(input_shape=(dataset_res, dataset_res, dataset_res, 3))
     autoencoder.adam_lr_decay = 0.005
     autoencoder.adam_learning_rate = 0.001
     autoencoder.adam_epsilon = 1e-8
     autoencoder.pretrain_epochs = args.ae_pretrainepochs
     autoencoder.variational_ae = False
-    
+    """
+
+    if args.ae_load or args.ae_epochs > 0:
+        # Create AE
+        if dataset.description["dimension"] == 2:
+            autoencoder = Autoencoder2D(input_shape=(dataset_res, dataset_res, 3))
+        else:
+            autoencoder = Autoencoder(input_shape=(dataset_res, dataset_res, dataset_res, 3))
+        autoencoder.adam_lr_decay = settings.ae.learning_rate_decay #0.0005
+        autoencoder.adam_learning_rate = settings.ae.learning_rate #0.00015 #0.0003775 #0.0005
+        autoencoder.adam_epsilon = None # 1e-8
+        autoencoder.pretrain_epochs = args.ae_pretrainepochs #1
+        autoencoder.variational_ae = args.ae_vae
+        autoencoder.dropout = settings.ae.dropout
+        autoencoder.l1_reg = settings.ae.l1_regularization
+        autoencoder.l2_reg = settings.ae.l2_regularization
+
+        # Create Loss
+        loss = "mse"
+        if "tanhMSE" in args.ae_loss and "_MSE" in args.ae_loss:
+            loss_ratio = 0.5
+            data_scale = 1.0
+            if len(args.ae_loss) != len("tanhMSE_MSE"):
+                try:
+                    loss_ratio = float(args.ae_loss[args.ae_loss.find("_MSE")+4:])
+                except:
+                    loss_ratio = 0.5
+                try:
+                    data_scale = float(args.ae_loss[7:args.ae_loss.find("_MSE")])
+                except:
+                    data_scale = 1.0
+            print("Using loss 'tanhMSE_MSE' with ratio {} and tanh input scaling {}".format(loss_ratio, data_scale))
+            loss = Loss(
+                loss_type=LossType.weighted_tanhmse_mse,
+                loss_ratio=loss_ratio,
+                data_input_scale=data_scale)
+                # l1_reg=settings.ae.l1_regularization,
+                # l2_reg=settings.ae.l2_regularization,
+                # autoencoder=autoencoder)
+        elif "tanhMSE" in args.ae_loss:
+            loss_scale = 1.0
+            if len(args.ae_loss) != len("tanhMSE"):
+                loss_scale = float(args.ae_loss[7:])
+            print("Using loss 'tanhMSE' with scaling {}".format(loss_scale))
+            loss = tanhMSE(scale=loss_scale)
+        autoencoder.set_loss(loss)
+
     # Loading from checkpoint
     if args.ae_load:
         autoencoder.load_model(settings.project.path + args.ae_load + "/autoencoder.h5")
@@ -113,10 +168,25 @@ def main():
     if args.ae_evaluate:
         evaluation.evaluate_autoencoder(autoencoder, dataset, fs, pretrain_hist, train_hist, evaluation.QuantityType.Velocity)
 
+    """
     # At this point the description must have been stored already
     if not autoencoder_desc:
         with open(fs["description_autoencoder"], 'r') as f:
             autoencoder_desc = json.load(f)
+    """
+
+    # At this point the description must have been stored already, except we do not use the AE at all
+    if not autoencoder_desc and not args.norm_desc:
+        with open(fs["description_autoencoder"], 'r') as f:
+            autoencoder_desc = json.load(f)
+    elif args.norm_desc:
+        with open(args.norm_desc, 'r') as f:
+            autoencoder_desc = json.load(f)
+            autoencoder_desc.save(fs["description_autoencoder"])
+
+    assert autoencoder_desc, "autoencoder_desc is needed at this point. Consider using the norm_desc path"
+
+
 
     # LSTM
     #----------------------------------------------------------------------------
@@ -258,6 +328,29 @@ def main():
         pred_y *= autoencoder_desc["dataset"]["velocity_normalization_factor"] # settings.dataset.velocity_normalization_factor
         true_y *= autoencoder_desc["dataset"]["velocity_normalization_factor"] # settings.dataset.velocity_normalization_factor
 
+        if dataset.description["dimension"] == 2:
+            plotter = util.plot.Plotter3D()
+            for true, pred in zip(true_y, pred_y):
+                x = true
+                y = pred
+                # x = np.squeeze(x)
+                # y = np.squeeze(y)
+                plotter.plot_heatmap(x, y, title="AE true and LSTM pred")
+        else:
+            plotter = util.plot.Plotter3D()
+            for true, pred in zip(true_y, pred_y):
+                x = true
+                y = pred
+                x = np.squeeze(x)
+                y = np.squeeze(y)
+                plotter.plot_pressure_widgets(fields={'True':x, 'Pred':y}, title="AE true and LSTM pred")
+
+        #plotter.show(block=True)
+        plotter.save_figures(fs["eval"]+"/", "LSTM_Prediction")
+
+    fs.copy(settings.project.path + args.name + "/")
+        
+    """
         print("\tPrediction Shape: {}".format(pred_y.shape))
 
         plotter = util.plot.Plotter3D()
@@ -268,7 +361,7 @@ def main():
         plotter.save_figures(fs["eval"]+"/", "LSTM_Prediction")
 
     fs.copy(settings.project.path + args.name + "/")
-
+    """
 # Start application
 #----------------------------------------------------------------------------
 if __name__=="__main__":
